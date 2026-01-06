@@ -1,5 +1,5 @@
 # ============================================
-# AI Auto-Applier Agent - Phase 1 & 2 Dependencies
+# AI Auto-Applier Agent - Phase 1, 2 & 3 Dependencies
 # Python 3.12.x REQUIRED (NOT 3.14 - incompatible)
 # ============================================
 
@@ -25,6 +25,11 @@ sentence-transformers>=5.2.0 # Embedding model (all-MiniLM-L6-v2)
 
 # Text Processing
 langchain-text-splitters>=0.1.0  # Document chunking utilities
+
+# Phase 3: Browser Automation (Vision Agent)
+# ----------------------
+playwright>=1.40.0           # Async browser automation
+fake-useragent>=1.4.0        # Random User-Agent generation for stealth
 
 # Shared Dependencies
 # ----------------------
