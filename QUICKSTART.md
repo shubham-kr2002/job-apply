@@ -257,8 +257,8 @@ python memory/brain.py
 
 1. ✅ **Phase 1**: Discover jobs → `python main.py`
 2. ✅ **Phase 2**: Train your profile → `python memory/brain.py`
-3. 🚧 **Phase 3**: Build Next.js dashboard
-4. 🚧 **Phase 4**: Automate form filling with Selenium
+3. ✅ **Phase 3**: Vision Agent (Playwright) - `browser/vision_agent.py`
+4. ✅ **Phase 4**: Manager & API (FastAPI + WebSocket) - `server/orchestrator.py`, `server/api.py`
 
 ---
 

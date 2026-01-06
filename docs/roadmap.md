@@ -2,7 +2,7 @@
 
 **Goal:** Build an autonomous agent that scrapes job boards, analyzes complex forms using Vision/LLMs (Groq Llama 3), and applies automatically with a human-in-the-loop memory system.
 
-**Status:** ✅ Phase 0-2 Complete | 🚧 Phase 3-6 In Progress
+**Status:** ✅ Phase 0-4 Complete | 🔧 Phase 5 In Progress | 🚀 Phase 6 Planned
 
 ---
 
@@ -12,7 +12,7 @@
 - [x] **Step 0.1:** Initialize Python Environment.
     - ✅ Created `venv` with Python 3.12.0
     - ✅ Installed all dependencies (100+ packages)
-    - ⚠️ Playwright install pending (Phase 3)
+    - ✅ Playwright installed and browsers provisioned (Phase 3 completed)
 - [x] **Step 0.2:** API Key Configuration.
     - ✅ Groq API Key configured in `.env`
     - ✅ Using Llama 3.3 70B Versatile model
@@ -61,56 +61,56 @@
 
 ---
 
-## 👁️ Phase 3: The Vision Agent (Browser Logic)
+## 👁️ Phase 3: The Vision Agent (Browser Logic) (COMPLETE)
 *Goal: The core mechanics of reading and filling forms.*
 
-- [ ] **Step 3.1:** Playwright Base.
-    - Create `browser/vision_agent.py`.
-    - Setup Async Playwright with stealth headers (`user_agent` rotation).
-- [ ] **Step 3.2:** The Shadow DOM Flattener.
-    - Implement the JS injection script (`dom_utils.js`) to expand Shadow Roots.
-    - Verify: `page.evaluate(FLATTENER_JS)` should return deep HTML including hidden inputs.
-- [ ] **Step 3.3:** Selector Mapping (The "Eyes").
-    - Function: `get_selectors(html)` -> Sends cleaned HTML to Groq Llama 3.3.
-    - Prompt Engineering: Ensure JSON output is strictly formatted `{"field": "selector"}`.
-- [ ] **Step 3.4:** Form Filler (The "Hands").
-    - Iterate through the map.
-    - Handle Text Inputs (`.fill()`) and File Uploads (`.set_input_files()`).
+- [x] **Step 3.1:** Playwright Base.
+    - ✅ Implemented `browser/vision_agent.py` using `playwright.async_api`.
+    - ✅ Stealth headers with randomized `User-Agent` via `fake-useragent`.
+- [x] **Step 3.2:** The Shadow DOM Flattener.
+    - ✅ Implemented `SHADOW_DOM_SCRIPT` (JS flattener) and integrated it into `scan_page()`.
+    - ✅ `page.evaluate(SHADOW_DOM_SCRIPT)` returns form field maps including Shadow DOM inputs.
+- [x] **Step 3.3:** Selector Mapping (The "Eyes").
+    - ✅ `scan_page()` produces `selector` and `label` for each field to drive filling logic.
+    - ✅ Ready for LLM-driven selector refinement in future iterations.
+- [x] **Step 3.4:** Form Filler (The "Hands").
+    - ✅ Implemented `fill_form()` and `click_button()` with file upload support.
+    - ✅ Observability: `screenshot_callback` streams base64 screenshots to the API WebSocket.
 
 ---
 
-## 🎮 Phase 4: The Manager (Integration)
-*Goal: Tie Hunter, Brain, and Vision together into a loop.*
+## 🎮 Phase 4: The Manager (Integration) (COMPLETE)
+*Goal: Tie Hunter, Brain, and Vision together into a loop and expose an API.*
 
-- [ ] **Step 4.1:** Main Loop Logic.
-    - Create `main.py`.
-    - Flow: `Hunter -> List[URLs] -> Loop -> Vision Agent -> Submit`.
-- [ ] **Step 4.2:** Error Handling (Try/Except).
-    - Wrap the application process. If it crashes, log error to `jobs.csv` and continue to next job.
-    - Do not crash the entire script on one failure.
-- [ ] **Step 4.3:** Success Validation.
-    - Detect "Success" message or URL change (e.g., `/thank-you`).
-    - Take a screenshot of the success page.
-
----
-
-## 🛑 Phase 5: The "Human-in-the-Loop" (Advanced)
-*Goal: Handle unknown questions gracefully.*
-
-- [ ] **Step 5.1:** Interrupt Logic.
-    - In `vision_agent.py`: If `ask_brain()` returns low confidence or `None`:
-        - **PAUSE** Playwright execution.
-        - **PRINT** Alert to Console: "USER HELP NEEDED: What is your salary expectation?"
-        - **WAIT** for `input()`.
-- [ ] **Step 5.2:** Learning.
-    - Take the user's `input()`, append it to `profile_stories.txt`, and re-run `train_brain()` instantly.
-    - Resume form filling with the new answer.
+- [x] **Step 4.1:** Main Loop Logic.
+    - ✅ Implemented `server/orchestrator.py` (`JobOrchestrator`) to process jobs sequentially.
+    - ✅ Flow: `Hunter -> Vision (navigate/scan) -> Brain -> Human-in-the-loop (if needed) -> Fill -> Submit`.
+- [x] **Step 4.2:** Error Handling & Resilience.
+    - ✅ Orchestrator uses try/except, logs errors, and continues processing.
+    - ✅ Stats and progress emitted via WebSocket events.
+- [x] **Step 4.3:** API & Observability.
+    - ✅ Implemented `server/api.py` (FastAPI) with endpoints `/start`, `/stop`, `/submit` and `/status`.
+    - ✅ WebSocket `/ws` broadcasts `log`, `screenshot`, `request_input`, `state`, and `stats` events.
 
 ---
 
-## 🚀 Phase 6: Polish & Deployment
-- [ ] **Step 6.1:** Stealth Mode.
-    - Integrate `ghost-cursor` for human-like mouse movement.
-    - Add random `sleep()` intervals (2s - 5s).
-- [ ] **Step 6.2:** Dashboard (Optional).
-    - Build a simple Streamlit app to view `jobs.csv` and screenshots.
+## 🛑 Phase 5: The "Human-in-the-Loop" (In Progress)
+*Goal: Handle unknown questions gracefully with human oversight.*
+
+- [x] **Step 5.1:** Interrupt Logic (PAUSE/RESUME).
+    - ✅ Implemented in `server/orchestrator.py` with `asyncio.Event()` for pause/wait-for-input.
+    - ✅ Orchestrator emits `request_input` via WebSocket and awaits `submit_override` (POST /submit) or WS "submit_input".
+- [ ] **Step 5.2:** Learning (Pending).
+    - ⏳ Plan: Append validated user input to `profile_stories.txt` and re-run `train_brain()` to reinforce answers.
+    - ✅ Design specified; implementation planned for Phase 5.2.
+
+---
+
+## 🚀 Phase 6: Polish & Deployment (Planned)
+- [ ] **Step 6.1:** Advanced Stealth.
+    - Integrate `ghost-cursor` or equivalent for human-like mouse movement.
+    - Add configurable random delays and anti-bot mitigations.
+- [ ] **Step 6.2:** Dashboard & UX.
+    - Build a Next.js dashboard to view `jobs.csv`, screenshots, and real-time events (WS).
+- [ ] **Step 6.3:** CI/CD & Deployment.
+    - Prepare Docker images and deployment pipelines for production.

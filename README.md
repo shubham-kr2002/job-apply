@@ -72,6 +72,27 @@ python memory\brain.py
 # Tests Q&A system with sample questions
 ```
 
+### 5. Run Phase 3 - Vision Agent (Local Test)
+```bash
+# Ensure Playwright browsers are installed once
+playwright install chromium
+
+# Run the vision integration test (opens browser)
+python browser\test_vision.py
+# Saves debug_screenshot.png and prints detected fields
+```
+
+### 6. Run Phase 4 - API Server
+```bash
+# Start the FastAPI server (dev)
+python -m server.api
+# OR with uvicorn
+uvicorn server.api:app --reload --host 0.0.0.0 --port 8000
+
+# WebSocket endpoint: ws://localhost:8000/ws
+# API docs: http://localhost:8000/docs
+```
+
 ---
 
 ## 📁 Project Structure
@@ -315,17 +336,24 @@ Console logs show:
 - [x] Confidence scoring system
 - [x] JSON-first API design
 
-### 🚧 Phase 3: Browser Automation (Planned)
-- [ ] Playwright async browser
-- [ ] Form detection with Groq Vision
-- [ ] Semantic selector generation
-- [ ] Auto-fill with human-in-loop
+### ✅ Phase 3: Browser Automation (Complete)
+- [x] Playwright async browser (`browser/vision_agent.py`)
+- [x] Shadow DOM flattener (`SHADOW_DOM_SCRIPT`) and field detection
+- [x] Stealth headers & random delays
+- [x] Form filler and screenshot callback
 
-### 📋 Phase 4-6: Advanced Features (Future)
-- [ ] Dashboard UI (Next.js)
-- [ ] Multi-resume management
-- [ ] Application tracking
-- [ ] Email monitoring & responses
+### ✅ Phase 4: Manager & API (Complete)
+- [x] `server/orchestrator.py` (`JobOrchestrator`) for the main loop
+- [x] `server/api.py` (FastAPI + WebSocket) with `/start`, `/stop`, `/submit`, `/status` and `/ws`
+- [x] Human-in-the-loop pause/resume implemented (asyncio.Event)
+
+### 🚧 Phase 5: Human-in-the-Loop (In Progress)
+- [x] Interrupt/pause logic for low-confidence answers
+- [ ] Learning: Append validated user input to profile and retrain
+
+### 🚀 Phase 6: Polish & Deployment (Planned)
+- [ ] Advanced stealth (ghost-cursor)
+- [ ] Next.js dashboard and CI/CD deployment
 
 See [docs/roadmap.md](docs/roadmap.md) for detailed milestones.
 
