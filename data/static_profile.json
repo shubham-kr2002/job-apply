@@ -1,0 +1,53 @@
+{
+  "name": "Shubham Kumar",
+  "email": "shubham.kumar@example.com",
+  "phone": "+91-9876543210",
+  "linkedin": "https://www.linkedin.com/in/shubham-kumar",
+  "github": "https://github.com/shubham-kumar",
+  "location": "Bangalore, India",
+  "current_title": "Senior AI Engineer",
+  "years_of_experience": 5,
+  "skills": [
+    "Python",
+    "Machine Learning",
+    "Deep Learning",
+    "NLP",
+    "LangChain",
+    "RAG Systems",
+    "Vector Databases",
+    "Groq",
+    "OpenAI",
+    "FastAPI",
+    "Docker",
+    "Kubernetes"
+  ],
+  "education": [
+    {
+      "degree": "M.Tech in Computer Science",
+      "institution": "IIT Bombay",
+      "year": "2019"
+    },
+    {
+      "degree": "B.Tech in Computer Engineering",
+      "institution": "NIT Trichy",
+      "year": "2017"
+    }
+  ],
+  "certifications": [
+    "AWS Certified Machine Learning - Specialty",
+    "Google Cloud Professional ML Engineer"
+  ],
+  "languages": [
+    "English (Fluent)",
+    "Hindi (Native)",
+    "Telugu (Conversational)"
+  ],
+  "availability": "2 weeks notice",
+  "work_authorization": "Indian Citizen",
+  "preferred_locations": [
+    "Bangalore",
+    "Hyderabad",
+    "Remote"
+  ],
+  "salary_expectation": "₹40-50 LPA"
+}

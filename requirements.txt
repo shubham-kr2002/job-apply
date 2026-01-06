@@ -1,0 +1,16 @@
+# Phase 1 Dependencies: Job Discovery Module
+# Install numpy first with binary wheel to avoid compilation issues
+numpy>=1.26.0
+python-jobspy
+pandas
+pydantic
+python-dotenv
+
+# Phase 2 Dependencies: Memory Layer (RAG System)
+langchain-groq
+langchain-chroma
+langchain-huggingface
+langchain-core
+chromadb
+sentence-transformers
+
