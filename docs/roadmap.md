@@ -2,50 +2,62 @@
 
 **Goal:** Build an autonomous agent that scrapes job boards, analyzes complex forms using Vision/LLMs (Groq Llama 3), and applies automatically with a human-in-the-loop memory system.
 
+**Status:** ✅ Phase 0-2 Complete | 🚧 Phase 3-6 In Progress
+
 ---
 
-## 📅 Phase 0: Setup & Infrastructure
+## ✅ Phase 0: Setup & Infrastructure (COMPLETE)
 *Foundational setup to ensure all tools are ready.*
 
-- [ ] **Step 0.1:** Initialize Python Environment.
-    - Create `venv`.
-    - Install `requirements.txt` (Playwright, LangChain, Groq, ChromaDB).
-    - Run `playwright install`.
-- [ ] **Step 0.2:** API Key Configuration.
-    - Get **Groq API Key** (Free tier for Llama 3 models).
-    - Create `.env` file (`GROQ_API_KEY=...`).
-- [ ] **Step 0.3:** Directory Structure.
-    - Create folders: `scrapers/`, `memory/`, `browser/`, `data/`.
-    - Create dummy `resume.pdf` and `profile.txt` in `data/`.
+- [x] **Step 0.1:** Initialize Python Environment.
+    - ✅ Created `venv` with Python 3.12.0
+    - ✅ Installed all dependencies (100+ packages)
+    - ⚠️ Playwright install pending (Phase 3)
+- [x] **Step 0.2:** API Key Configuration.
+    - ✅ Groq API Key configured in `.env`
+    - ✅ Using Llama 3.3 70B Versatile model
+- [x] **Step 0.3:** Directory Structure.
+    - ✅ Created: `scrapers/`, `memory/`, `data/`, `docs/`
+    - ✅ Created: `static_profile.json`, `profile_stories.txt`
+    - 📝 `browser/` pending (Phase 3)
 
 ---
 
-## 🕵️ Phase 1: The Hunter (Job Aggregation)
+## ✅ Phase 1: The Hunter (Job Aggregation) (COMPLETE)
 *Goal: Get a stream of valid URLs to apply to.*
 
-- [ ] **Step 1.1:** Basic Scraper Implementation.
-    - Implement `scrapers/hunter.py` using `python-jobspy`.
-    - Config: Search "AI Engineer" on LinkedIn/Indeed/Glassdoor.
-- [ ] **Step 1.2:** Filtering Logic.
-    - Filter results to keep **ONLY** `greenhouse.io`, `lever.co`, and `ashbyhq.com` links.
-    - Discard "Easy Apply" (LinkedIn native) and "Workday" (Login walls) for MVP.
-- [ ] **Step 1.3:** Deduplication.
-    - Create a simple check against `jobs.csv` to ensure we don't fetch already applied jobs.
+- [x] **Step 1.1:** Basic Scraper Implementation.
+    - ✅ Implemented `scrapers/hunter.py` using `python-jobspy`
+    - ✅ Configured for LinkedIn/Indeed/Glassdoor scraping
+    - ✅ Test: "Generative AI Engineer" in "India"
+- [x] **Step 1.2:** Filtering Logic.
+    - ✅ **STRICT** filtering: Only `greenhouse.io`, `lever.co`, `ashbyhq.com`
+    - ✅ Discards LinkedIn Easy Apply and Workday URLs
+    - ✅ MD5-based job ID generation
+- [x] **Step 1.3:** Deduplication.
+    - ✅ CSV-based deduplication (`jobs.csv`)
+    - ✅ Idempotent saves (no duplicates)
+    - ✅ Tracks job_id, company, title, url, date
 
 ---
 
-## 🧠 Phase 2: The Brain (Memory & RAG)
+## ✅ Phase 2: The Brain (Memory & RAG) (COMPLETE)
 *Goal: Stop the agent from hallucinating or asking repetitive questions.*
 
-- [ ] **Step 2.1:** Knowledge Base Setup.
-    - Create `memory/brain.py`.
-    - Implement `train_brain()`: Load `profile_stories.txt`, split text, and save to ChromaDB.
-    - **Checkpoint:** Run script and verify `chroma_db` folder is created.
-- [ ] **Step 2.2:** Groq Integration (Text).
-    - Implement `ask_brain(query)` using `ChatGroq` (Llama 3.3 70B).
-    - Logic: Retrieve context from ChromaDB -> Send to Groq -> Return clean string answer.
-- [ ] **Step 2.3:** Static Data Handler.
-    - Create `static_profile.json` handler for simple fields (First Name, Email, Phone) to save LLM tokens.
+- [x] **Step 2.1:** Knowledge Base Setup.
+    - ✅ Created `memory/brain.py` with `BrainAgent` class
+    - ✅ Implemented `train_brain()`: Chunks text into 500-char segments (50 overlap)
+    - ✅ **Verified:** `chroma_db/` folder created with 14 chunks
+    - ✅ Uses HuggingFace `all-MiniLM-L6-v2` embeddings
+- [x] **Step 2.2:** Groq Integration (Text).
+    - ✅ Implemented `ask_brain(query)` using `ChatGroq` (Llama 3.3 70B)
+    - ✅ 3-Tier Logic: Static → Vector Search (k=3) → LLM Generation
+    - ✅ Returns `BrainResponse` with confidence scores (0.95 static, 0.85 LLM)
+    - ✅ Fixed `.env` loading with `dotenv`
+- [x] **Step 2.3:** Static Data Handler.
+    - ✅ `static_profile.json` with 12 skills, 2 education entries
+    - ✅ Field mappings: name, email, phone, linkedin, github, experience, skills
+    - ✅ Saves LLM tokens on exact-match queries
 
 ---
 

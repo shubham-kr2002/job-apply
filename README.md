@@ -1,67 +1,75 @@
-# AI Auto-Applier Agent (Groq Edition) - Phase 1
+# AI Auto-Applier Agent (Groq Edition)
 
-**Job Discovery Module**: Automated job aggregation, ATS filtering, and deduplication system for AI/ML engineering positions.
+**Status:** ✅ Phase 1-2 Complete | 🚧 Phase 3-6 In Progress
+
+Autonomous job application system combining intelligent job discovery, RAG-powered Q&A, and browser automation (upcoming).
 
 ---
 
-## 🎯 Overview
+## 🎯 What's Built
 
-Phase 1 implements an intelligent job discovery engine that:
-- Aggregates jobs from **LinkedIn, Indeed, and Glassdoor**
-- Filters for **ATS-compliant** job boards only (Greenhouse, Lever, Ashby)
-- Prevents duplicates using MD5 hashing
-- Maintains stealth with randomized headers
-- Logs all operations with timestamps
+### ✅ Phase 1: Job Discovery Engine
+- Aggregates jobs from **LinkedIn, Indeed, Glassdoor** via python-jobspy
+- **STRICT** ATS filtering: Only Greenhouse, Lever, Ashby URLs
+- MD5-based deduplication (no repeated applications)
+- CSV-based job database with timestamps
+
+### ✅ Phase 2: Memory Layer (RAG System)
+- Groq LLM (Llama 3.3 70B) integration for intelligent Q&A
+- ChromaDB vector storage with HuggingFace embeddings
+- 3-tier answer system: Static → Vector Search → LLM
+- Confidence scoring (0.95 static, 0.85 LLM-generated)
+- Profile ingestion from JSON + unstructured text
 
 ---
 
 ## 📋 Prerequisites
 
-- Python 3.8 or higher
+- **Python 3.12** (tested with 3.12.0) - **NOT 3.14** (incompatible with ChromaDB)
 - pip (Python package manager)
-- Internet connection for job scraping
+- Groq API key (free tier available)
+- Internet connection
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Clone/Navigate to Project Directory
+### 1. Setup Virtual Environment (Python 3.12 Required!)
 ```bash
-cd job-hunter
-```
-
-### 2. Create Virtual Environment
-```bash
-# Create venv
+# IMPORTANT: Use Python 3.12.x (NOT 3.14 - incompatible with ChromaDB)
 python -m venv venv
 
-# Activate venv
-# On Windows:
-venv\Scripts\activate
+# Activate
+.\venv\Scripts\activate  # Windows
+# source venv/bin/activate  # macOS/Linux
 
-# On macOS/Linux:
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
+# Install all dependencies
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Run the Application
-
-**Phase 1 (Job Discovery):**
+### 2. Configure Groq API Key
 ```bash
-python main.py
+# Create .env from template
+copy .env.example .env  # Windows
+# cp .env.example .env  # macOS/Linux
+
+# Edit .env and add your key:
+# GROQ_API_KEY=gsk_your_key_here
 ```
 
-**Phase 2 (Memory Layer - RAG System):**
+### 3. Run Phase 1 - Job Discovery
 ```bash
-# Set your Groq API key first
-copy .env.example .env  # Then edit .env with your key
+python main.py
+# Output: data/jobs.csv with ATS-filtered jobs
+```
 
-# Test the brain agent
-python memory/brain.py
+### 4. Run Phase 2 - Memory Training & Q&A Test
+```bash
+python memory\brain.py
+# Downloads embeddings (~90MB first time)
+# Trains ChromaDB with profile data
+# Tests Q&A system with sample questions
 ```
 
 ---
@@ -222,77 +230,51 @@ All other job postings are **automatically discarded** during processing.
 
 ## 🐛 Troubleshooting
 
-### NumPy Compilation Error (Windows)
-If you see "ERROR: Unknown compiler(s)" or "Failed to activate VS environment":
-
-**Solution 1 - Upgrade pip and install (Recommended)**:
+### Python Version Issues
+**Error: ChromaDB/Pydantic installation fails**
 ```bash
-# Upgrade pip tools first
-pip install --upgrade pip setuptools wheel
+# You MUST use Python 3.12.x (NOT 3.14)
+# Pydantic V1 is incompatible with Python 3.14
+python --version  # Should show 3.12.x
 
-# Install with binary wheels only (no compilation)
-pip install --only-binary :all: -r requirements.txt
+# Recreate venv with correct version:
+deactivate
+python3.12 -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-**Solution 2 - If Solution 1 Fails**:
+### GROQ_API_KEY Not Found
 ```bash
-# Install numpy separately first
-pip install numpy
+# Create .env from template
+copy .env.example .env  # Windows
+# cp .env.example .env  # macOS/Linux
 
-# Then install remaining packages
-pip install python-jobspy pandas pydantic python-dotenv
+# Get free key: https://console.groq.com/keys
+# Add to .env: GROQ_API_KEY=gsk_your_key_here
 ```
 
-**Why this happens**: Python 3.14 is very new and some packages may not have prebuilt wheels yet, requiring compilation. The updated requirements.txt now handles this automatically.
+### ChromaDB Embeddings Slow on First Run
+- **Expected**: First run downloads model (~90MB)
+- **Subsequent runs**: Uses cached model (fast)
+- **Be patient**: Initial `train_brain()` takes 1-2 minutes
 
-### Virtual Environment Not Activating
-**Windows**:
-```bash
-# If script execution is disabled:
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-venv\Scripts\activate
-```
-
-**macOS/Linux**:
-```bash
-# Ensure correct path:
-source venv/bin/activate
-```
-
-### No Jobs Found
+### No Jobs Found (Phase 1)
 - Check internet connection
-- Verify search term is not too specific
-- Try broader location (e.g., "United States" instead of "Small Town, TX")
-- Increase `results_wanted` parameter
+- Try broader search terms ("AI Engineer" vs "Senior Generative AI Specialist")
+- Increase `results_wanted` in main.py
+- Verify ATS providers aren't blocking your IP (rare)
 
-### ImportError After Installation
-```bash
-# Ensure venv is activated (you should see (venv) in terminal)
-# Reinstall dependencies:
-pip install --upgrade -r requirements.txt
+### Virtual Environment Activation Fails (Windows)
+```powershell
+# Enable script execution
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\venv\Scripts\activate
 ```
-
-### Permission Errors on data/jobs.csv
-- Close any programs with the CSV file open (Excel, etc.)
-- Ensure `data/` directory exists and is writable
-
-### Phase 2: "GROQ_API_KEY not found"
-```bash
-# Create .env file from example
-copy .env.example .env
-
-# Edit .env and add your Groq API key
-# Get key from: https://console.groq.com/keys
-```
-
-### Phase 2: ChromaDB/HuggingFace Slow First Run
-- First run downloads embedding model (~90MB)
-- Subsequent runs use cached model
-- Be patient on first `train_brain()` call
 
 ---
 
-## 📈 Logging
+## 📈 Logging & Monitoring
 
 All operations are logged with timestamps. Monitor console output for:
 - ✅ Jobs scraped count (Phase 1)
@@ -306,46 +288,92 @@ All operations are logged with timestamps. Monitor console output for:
 
 ## 🔮 Roadmap
 
-### Phase 1 ✅ COMPLETE
-- [x] Job aggregation from LinkedIn, Indeed, Glassdoor
+Console logs show:
+- **Phase 1**: Jobs scraped, ATS filtering, deduplication stats
+- **Phase 2**: Brain training progress, Q&A responses with confidence scores
+- **Warnings**: Missing fields, API errors (non-blocking)
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Phase 0: Setup (Complete)
+- [x] Python 3.12 virtual environment
+- [x] Dependency management (requirements.txt)
+- [x] Groq API integration
+
+### ✅ Phase 1: Job Discovery (Complete)
+- [x] Multi-site scraping (LinkedIn, Indeed, Glassdoor)
 - [x] ATS filtering (Greenhouse, Lever, Ashby)
-- [x] Deduplication with MD5 hashing
-- [x] CSV data persistence
+- [x] MD5 deduplication system
+- [x] CSV database with timestamps
 
-### Phase 2 ✅ COMPLETE
-- [x] RAG system with ChromaDB + Groq
-- [x] Profile ingestion (JSON + unstructured text)
-- [x] Intelligent Q&A with confidence scores
-- [x] JSON-first API design for Next.js
+### ✅ Phase 2: Memory Layer (Complete)
+- [x] ChromaDB vector storage
+- [x] Profile ingestion (JSON + text)
+- [x] Intelligent Q&A with Groq LLM
+- [x] Confidence scoring system
+- [x] JSON-first API design
 
-### Phase 3 (In Progress)
-- [ ] Next.js dashboard UI
-- [ ] API endpoints (`/api/brain`, `/api/jobs`)
-- [ ] Manual override interface
-- [ ] Batch question answering
+### 🚧 Phase 3: Browser Automation (Planned)
+- [ ] Playwright async browser
+- [ ] Form detection with Groq Vision
+- [ ] Semantic selector generation
+- [ ] Auto-fill with human-in-loop
 
-### Phase 4 (Planned)
-- [ ] Selenium-based auto-application
-- [ ] Resume/CV parsing
-- [ ] Form detection and filling
-- [ ] Application tracking system
+### 📋 Phase 4-6: Advanced Features (Future)
+- [ ] Dashboard UI (Next.js)
+- [ ] Multi-resume management
+- [ ] Application tracking
+- [ ] Email monitoring & responses
 
-### Phase 3 (Planned)
-- [ ] Email monitoring
-- [ ] Interview scheduling
-- [ ] Follow-up automation
+See [docs/roadmap.md](docs/roadmap.md) for detailed milestones.
+
+---
+
+## 📚 Documentation
+
+- [Phase 2 Memory Guide](docs/PHASE2_MEMORY.md) - RAG system deep dive
+- [Product Requirements](docs/PRD.md) - Complete feature specifications
+- [Roadmap](docs/roadmap.md) - Development timeline
 
 ---
 
 ## 🤝 Contributing
 
-This is a Phase 1 implementation. Future enhancements welcome:
-- Additional ATS providers
-- More job boards
-- Advanced filtering logic
+Future enhancements welcome:
+- Additional ATS providers (Workday, iCIMS)
+- More job boards integration
+- Advanced filtering (salary, remote, etc.)
 - Export formats (JSON, Excel)
 
 ---
+
+## 📄 License
+
+MIT License
+
+---
+
+## 👨‍💻 Credits
+
+**Built by:** Shubham Kumar (Lead Python Backend Engineer)  
+**Specialization:** Data Pipelines, Web Scraping, AI Agents
+
+---
+
+## 🙏 Acknowledgments
+
+- **python-jobspy** - Multi-site job aggregation
+- **Groq** - Ultra-fast LLM inference (Llama 3.3 70B)
+- **ChromaDB** - Embedded vector database
+- **HuggingFace** - Sentence transformers embeddings
+
+---
+
+**Happy Job Hunting! 🎯**
+
+For detailed guides, see [docs/](docs/) directory.
 
 ## 📄 License
 

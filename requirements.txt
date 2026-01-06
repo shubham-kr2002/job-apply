@@ -1,16 +1,32 @@
-# Phase 1 Dependencies: Job Discovery Module
-# Install numpy first with binary wheel to avoid compilation issues
-numpy>=1.26.0
-python-jobspy
-pandas
-pydantic
-python-dotenv
+# ============================================
+# AI Auto-Applier Agent - Phase 1 & 2 Dependencies
+# Python 3.12.x REQUIRED (NOT 3.14 - incompatible)
+# ============================================
 
-# Phase 2 Dependencies: Memory Layer (RAG System)
-langchain-groq
-langchain-chroma
-langchain-huggingface
-langchain-core
-chromadb
-sentence-transformers
+# Phase 1: Job Discovery Engine
+# ----------------------
+python-jobspy>=1.1.82        # Multi-site job scraper (LinkedIn, Indeed, Glassdoor)
+pandas>=2.3.0                # Data manipulation and CSV operations
+pydantic>=2.0.0              # Schema validation and data models
 
+# Phase 2: Memory Layer (RAG System)
+# ----------------------
+# LLM & Orchestration
+langchain>=0.1.0             # LLM framework core
+langchain-core>=1.2.0        # Core abstractions
+langchain-groq>=1.1.0        # Groq API integration (Llama 3.3 70B)
+langchain-community>=0.1.0   # Community integrations
+
+# Vector Database & Embeddings
+chromadb>=0.4.24             # Embedded vector store
+langchain-chroma>=0.2.0      # LangChain ChromaDB integration
+langchain-huggingface>=0.1.0 # HuggingFace embeddings integration
+sentence-transformers>=5.2.0 # Embedding model (all-MiniLM-L6-v2)
+
+# Text Processing
+langchain-text-splitters>=0.1.0  # Document chunking utilities
+
+# Shared Dependencies
+# ----------------------
+python-dotenv>=1.0.0         # Environment variable management
+numpy>=1.26.0                # Numerical operations (required by embeddings)
